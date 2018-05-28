@@ -6,7 +6,9 @@ import io.swagger.annotations.Api;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +21,13 @@ public class CustomerController {
 
     private final CustomerRepository repository;
 
+    private final MongoTemplate mongoTemplate;
+
     @Autowired
-    public CustomerController(CustomerRepository repository) {
+    public CustomerController(CustomerRepository repository,
+        MongoTemplate mongoTemplate) {
         this.repository = repository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @PostMapping("/list")
@@ -40,6 +46,11 @@ public class CustomerController {
         repository.delete(customer);
 
         return listAll(customer);
+    }
+
+    @GetMapping("/template")
+    public List<Customer> testTemplate() {
+        return mongoTemplate.findAll(Customer.class);
     }
 
 }
